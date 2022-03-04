@@ -2,8 +2,8 @@
 name: 'Current PHP Releases'
 description: 'Get data from PHPReleases.com'
 outputs:
-  releases: #id of output
-    description: 'The data returned from phpreleases.com'
+  range:
+    description: 'Should be a range'
 runs:
   using: 'docker'
   image: 'Dockerfile'

@@ -1,5 +1,5 @@
 # Container image that runs your code
-FROM curlimages/curl:7.81.0
+FROM dwdraju/alpine-curl-jq
 
 # Copies your code file from your action repository to the filesystem path `/` of the container
 COPY entrypoint.sh /entrypoint.sh
