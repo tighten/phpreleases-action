@@ -1,0 +1,28 @@
+on: [push]
+
+jobs:
+  output_releases:
+    runs-on: ubuntu-latest
+    outputs:
+      minimum: ${{ steps.releases.outputs.minimum }}
+      latest: ${{ steps.releases.outputs.latest }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Fetch Current Releases
+        uses: ./
+        id: releases
+
+  current_php_releases:
+    runs-on: ubuntu-latest
+    needs: output_releases
+    strategy:
+      matrix:
+        php: ["${{ needs.output_releases.outputs.minimum }}", "${{ needs.output_releases.outputs.latest }}"]
+
+    name: PHP ${{ matrix.php }}
+
+    steps:
+      - name: Echo PHP
+        run: echo ${{ matrix.php }}
