@@ -1,9 +1,59 @@
-# action.yml
-name: 'Current PHP Releases'
-description: 'Get data from PHPReleases.com'
+name: 'Test Releases'
+description: 'Should output the latest release'
+inputs:
+  releases:
+    required: false
+    description: 'Add specific versions to the matrix array'
 outputs:
   range:
-    description: 'Should be a range'
+    description: "Releases Array"
+    value: ${{ steps.return-response.outputs.releases-array }}
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
+  using: "composite"
+  steps:
+    - name: Store user input
+      id: store-user-input
+      shell: bash
+      run: |
+        echo "::set-output name=user-input::$(echo ${{ inputs.releases }})"
+    - name: Make Latest Request
+      id: make-latest-request
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: 'https://phpreleases.com/api/releases/latest'
+        method: 'GET'
+    - name: Make Security Request
+      id: make-security-request
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: 'https://phpreleases.com/api/releases/minimum-supported/security'
+        method: 'GET'
+    - name: Make Active Request
+      id: make-active-request
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: 'https://phpreleases.com/api/releases/minimum-supported/active'
+        method: 'GET'
+    - name: Parse Latest
+      id: parse-latest
+      shell: bash
+      run: |
+        latest=${{ steps.make-latest-request.outputs.response }}
+        IFS='.'
+        read -ra arr <<< "$latest"
+        echo "::set-output name=latest-release::$(echo ${arr[0]}.${arr[1]})"
+    - name: Parse Minimum Supported
+      id: parse-min
+      shell: bash
+      run: |
+        echo "::set-output name=min-active-release::$(echo ${{ fromJSON(steps.make-active-request.outputs.response).provided.major }}.${{ fromJSON(steps.make-active-request.outputs.response).provided.minor }})"
+        echo "::set-output name=min-security-release::$(echo ${{ fromJSON(steps.make-security-request.outputs.response).provided.major }}.${{ fromJSON(steps.make-security-request.outputs.response).provided.minor }})"
+    - name: Return Response
+      id: return-response
+      run: |
+        if [ -z ${{ steps.store-user-input.outputs.user-input }} ]; then
+        echo "::set-output name=releases-array::$(echo ['${{ steps.parse-latest.outputs.latest-release }}', '${{ steps.parse-min.outputs.min-active-release }}', '${{ steps.parse-min.outputs.min-security-release }}'])"
+        else
+        echo "::set-output name=releases-array::$(echo ['${{ steps.parse-latest.outputs.latest-release }}', '${{ steps.parse-min.outputs.min-active-release }}', '${{ steps.parse-min.outputs.min-security-release }}', '${{ steps.store-user-input.outputs.user-input }}'])"
+        fi
+      shell: bash
