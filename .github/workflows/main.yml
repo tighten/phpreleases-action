@@ -15,7 +15,7 @@ jobs:
         uses: ./
         id: releases
         with:
-          releases: '7.3, 5.6'
+          releases: '7.4, 7.3'
 
   current_php_releases:
     runs-on: ubuntu-latest
