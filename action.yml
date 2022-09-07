@@ -65,7 +65,6 @@ runs:
 
           printf -v formatted ',%s' "${deduped[@]}"
           formatted=${formatted:1}
-          echo "${formatted}"
 
           echo "::set-output name=releases-array::$(echo [${formatted}])"
         fi
