@@ -54,23 +54,18 @@ runs:
         latest="${{ steps.parse-latest.outputs.latest-release }}"
         minAct="${{ steps.parse-min.outputs.min-active-release }}"
         minSec="${{ steps.parse-min.outputs.min-security-release }}"
-
-#        No user input
+        
         if [ -z ${{ steps.store-user-input.outputs.user-input }} ]; then
           echo "::set-output name=releases-array::$(echo [${latest}, ${minAct}, ${minSec}])"
-#        User input
         else
-#          Read user input into array
           userInput="${{ steps.store-user-input.outputs.user-input }}"
           IFS=', ' read -r -a array <<< "$userInput"
-#          Add generated versions to the array
           array+=(${latest} ${minAct} ${minSec})
-#          Remove duplicates
           deduped=($(echo "${array[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 
-#          Format array to a string
           printf -v formatted ',%s' "${deduped[@]}"
           formatted=${formatted:1}
+          echo "${formatted}"
 
           echo "::set-output name=releases-array::$(echo [${formatted}])"
         fi
