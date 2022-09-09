@@ -4,15 +4,9 @@ jobs:
   output_releases:
     name: Generate PHP Releases Array
     runs-on: ubuntu-latest
-    outputs:
-      range: ${{ steps.releases.outputs.range }}
     steps:
-      # we won't need this first 'uses' step when the action is published, just for local use
-      - name: Checkout
-        uses: actions/checkout@v2
-
       - name: Fetch Current Releases
-        uses: ./
+        uses: tighten/phpreleases-action@v1
         id: releases
         with:
           releases: '7.4, 7.3'
