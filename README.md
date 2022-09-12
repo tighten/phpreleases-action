@@ -8,14 +8,13 @@ By default, this action uses the [PHP Releases API](https://phpreleases.com/) to
   # This job will need to run before the job that defines the matrix.
   output_releases:
     name: Generate PHP Releases Array
-	  # Requires a machine that can execute bash and make http requests.
+    # Requires a machine that can execute bash and make http requests.
     runs-on: ubuntu-latest
     steps:
       - name: Fetch Current Releases
         uses: tighten/phpreleases-action@v1
         id: releases
- ### Create a matrix from the return value
-```yaml
+ # Create a matrix from the return value
   current_php_releases:
     runs-on: ubuntu-latest
     # The matrix cannot be built before the job has finished.
@@ -25,6 +24,7 @@ By default, this action uses the [PHP Releases API](https://phpreleases.com/) to
         # GitHub Actions expression to get the return value.
         php: ${{ fromJSON(needs.output_releases.outputs.range) }}
     name: PHP ${{ matrix.php }}
+```
 
 A full sample is available in this repo's [.github/workflows directory](https://github.com/tighten/phpreleases-action/blob/main/.github/workflows/main.yml).
 
@@ -84,6 +84,8 @@ jobs:
       with:
           php-version: ${{ matrix.php }}
           extensions: posix, dom, curl, libxml, mbstring, zip, pcntl, bcmath, soap, intl, gd, exif, iconv, imagick
+```
+
 ## Issues
 If you need to report an issue or a feature idea, let us know by [opening a GitHub Issue](https://github.com/tighten/phpreleases-action/issues/new).
 
