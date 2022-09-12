@@ -1,29 +1,30 @@
 # PHP Releases Action
-Generates an array of supported PHP releases for use within a GitHub Actions matrix.
+Tired of manually keeping your GitHub actions workflow up to date with the PHP support schedule?  Use this action to generate an array of supported PHP versions for a GitHub Actions matrix. 
+
+By default, this action uses the [PHP Releases API](https://phpreleases.com/) to retrieve the  PHP versions that are currently supported and formats them for a GitHub Actions matrix. Additional versions can be added to the matrix utilizing the `with` parameter. 
 
 ## Usage
-Within your workflow `jobs` block, add the following job _before_ your matrix job:
 ```yaml
+  # This job will need to run before the job that defines the matrix.
   output_releases:
     name: Generate PHP Releases Array
+	  # Requires a machine that can execute bash and make http requests.
     runs-on: ubuntu-latest
     steps:
       - name: Fetch Current Releases
         uses: tighten/phpreleases-action@v1
         id: releases
-```
-If you need to add specific versions to the matrix statically (to ensure they're included regardless of current support), add them as a comma separated list with the `releases` key:
+ ### Create a matrix from the return value
 ```yaml
-  output_releases:
-    name: Generate PHP Releases Array
+  current_php_releases:
     runs-on: ubuntu-latest
-    steps:
-      - name: Fetch Current Releases
-        uses: tighten/phpreleases-action@v1
-        id: releases
-        with:
-          releases: '7.4, 7.3'
-```
+    # The matrix cannot be built before the job has finished.
+    needs: output_releases
+    strategy:
+      matrix:
+        # GitHub Actions expression to get the return value.
+        php: ${{ fromJSON(needs.output_releases.outputs.range) }}
+    name: PHP ${{ matrix.php }}
 
 A full sample is available in this repo's [.github/workflows directory](https://github.com/tighten/phpreleases-action/blob/main/.github/workflows/main.yml).
 
@@ -34,12 +35,59 @@ Then, refer to the `output_releases` job's output in the `php` line of your matr
       php: ${{ fromJSON(needs.output_releases.outputs.range) }}
 ```
 
-You can implement additional matrix values (os or laravel versions, for example), as well as include/exclude combinations [as you normally would with a matrix](https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs).
+## Example
+```yaml
+name: Run Tests
 
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  output_releases:
+    name: Generate PHP Releases Array
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Current Releases
+        uses: tighten/phpreleases-action@v1
+        id: releases
+        with:
+          releases: '7.4'
+  tests:
+    needs: output_releases
+    strategy:
+      matrix:
+        os: [Ubuntu, Windows, macOS]
+        php: ${{ fromJSON(needs.output_releases.outputs.range) }}
+
+        include:
+        - os: Ubuntu
+          os-version: ubuntu-latest
+
+        - os: Windows
+          os-version: windows-latest
+
+        - os: macOS
+          os-version: macos-latest
+
+    name: ${{ matrix.os }} - PHP ${{ matrix.php }}
+
+    runs-on: ${{ matrix.os-version }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v1
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+          php-version: ${{ matrix.php }}
+          extensions: posix, dom, curl, libxml, mbstring, zip, pcntl, bcmath, soap, intl, gd, exif, iconv, imagick
 ## Issues
-If you encounter any issues in the implementation of this workflow, or have feature ideas, feel free to [open a github issue](https://github.com/tighten/phpreleases-action/issues/new).
+If you need to report an issue or a feature idea, let us know by [opening a GitHub Issue](https://github.com/tighten/phpreleases-action/issues/new).
 
-Thanks for using the PHP releases github action!
+Thanks for using the PHP releases GitHub Action!
 
 ## Contributing
 Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
