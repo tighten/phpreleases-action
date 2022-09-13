@@ -10,13 +10,13 @@ jobs:
         id: releases
         with:
           releases: '7.4, 7.3'
-
+          
   current_php_releases:
     runs-on: ubuntu-latest
     needs: output_releases
     strategy:
       matrix:
-        php: ${{ fromJSON(needs.output_releases.outputs.range) }}
+        php: ${{fromJSON(needs.output_releases.outputs.range)}}
     name: PHP ${{ matrix.php }}
     steps:
       - name: Echo PHP
