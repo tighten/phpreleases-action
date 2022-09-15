@@ -54,8 +54,8 @@ runs:
         latest="${{ steps.parse-latest.outputs.latest-release }}"
         minAct="${{ steps.parse-min.outputs.min-active-release }}"
         minSec="${{ steps.parse-min.outputs.min-security-release }}"
-        
-        if [ -z ${{ steps.store-user-input.outputs.user-input }} ]; then
+
+        if [ -z "${{ steps.store-user-input.outputs.user-input }}" ]; then
           echo "::set-output name=releases-array::$(echo [${latest}, ${minAct}, ${minSec}])"
         else
           userInput="${{ steps.store-user-input.outputs.user-input }}"
