@@ -10,8 +10,6 @@ jobs:
       - name: Fetch Current Releases
         uses: tighten/phpreleases-action@krc/beta-test
         id: releases
-        with:
-          releases: '7.4, 7.3'
 
   current_php_releases:
     runs-on: ubuntu-latest
