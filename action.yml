@@ -1,4 +1,7 @@
 name: 'PHP Releases'
+branding:
+  icon: 'plus'  
+  color: 'yellow'
 description: 'Generates an array of the latest, minimum security, and minimum active PHP releases, along with user defined versions'
 inputs:
   releases:
