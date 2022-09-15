@@ -45,7 +45,7 @@ Then, refer to the `output_releases` job's output in the `php` line of your matr
   # This job will need to run before the job that defines the matrix.
   output_releases:
     name: Generate PHP Releases Array
-	  # Requires a machine that can execute bash and make http requests.
+    # Requires a machine that can execute bash and make http requests.
     runs-on: ubuntu-latest
     # Expose the variable for your dependent job.
     outputs:
