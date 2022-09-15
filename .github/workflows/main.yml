@@ -16,7 +16,7 @@ jobs:
     needs: output_releases
     steps:
       - name: Echo PHP
-        run: echo ${{ toJSON(jobs.output_releases.outputs.range) }}
+        run: echo ${{ toJSON(needs.output_releases.outputs) }}
 #    strategy:
 #      matrix:
 #        php: ${{fromJSON(needs.output_releases.outputs.range)}}
