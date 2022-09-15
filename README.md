@@ -10,11 +10,17 @@ By default, this action uses the [PHP Releases API](https://phpreleases.com/) to
     name: Generate PHP Releases Array
     # Requires a machine that can execute bash and make http requests.
     runs-on: ubuntu-latest
+    # Expose the variable for your dependent job.
+    outputs:
+      range: ${{ steps.releases.outputs.range }}
     steps:
       - name: Fetch Current Releases
         uses: tighten/phpreleases-action@v1
         id: releases
- # Create a matrix from the return value
+ ```
+ 
+### Create a matrix from the return value
+```yaml
   current_php_releases:
     runs-on: ubuntu-latest
     # The matrix cannot be built before the job has finished.
@@ -25,7 +31,6 @@ By default, this action uses the [PHP Releases API](https://phpreleases.com/) to
         php: ${{ fromJSON(needs.output_releases.outputs.range) }}
     name: PHP ${{ matrix.php }}
 ```
-
 A full sample is available in this repo's [.github/workflows directory](https://github.com/tighten/phpreleases-action/blob/main/.github/workflows/main.yml).
 
 Then, refer to the `output_releases` job's output in the `php` line of your matrix strategy, like below:
@@ -33,6 +38,25 @@ Then, refer to the `output_releases` job's output in the `php` line of your matr
   strategy:
     matrix:
       php: ${{ fromJSON(needs.output_releases.outputs.range) }}
+```
+
+### Add PHP versions that are not included by default
+```yaml
+  # This job will need to run before the job that defines the matrix.
+  output_releases:
+    name: Generate PHP Releases Array
+	  # Requires a machine that can execute bash and make http requests.
+    runs-on: ubuntu-latest
+    # Expose the variable for your dependent job.
+    outputs:
+      range: ${{ steps.releases.outputs.range }}
+    steps:
+      - name: Fetch Current Releases
+        uses: tighten/phpreleases-action@v1
+        id: releases
+        with:
+          # Comma delimited string of all versions that should be included in the matrix.
+          releases: '7.4, 7.3'
 ```
 
 ## Example
@@ -48,6 +72,8 @@ jobs:
   output_releases:
     name: Generate PHP Releases Array
     runs-on: ubuntu-latest
+    outputs:
+      range: ${{ steps.releases.outputs.range }}
     steps:
       - name: Fetch Current Releases
         uses: tighten/phpreleases-action@v1
