@@ -1,0 +1,53 @@
+name: Fetch Releases
+
+on:
+  schedule:
+    - cron:  "0 0,12 * * *"
+  push:
+    branches:
+      - main
+
+jobs:
+  fetch_releases:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Make Latest Request
+        id: make-latest-request
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://phpreleases.com/api/releases/latest'
+          method: 'GET'
+
+      - name: Make Security Request
+        id: make-security-request
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://phpreleases.com/api/releases/minimum-supported/security'
+          method: 'GET'
+
+      - name: Make Active Request
+        id: make-active-request
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://phpreleases.com/api/releases/minimum-supported/active'
+          method: 'GET'
+
+      - name: Write Contents
+        shell: bash
+        run: |
+          latest=${{ steps.make-latest-request.outputs.response }}
+          IFS='.'
+          read -ra arr <<< "$latest"
+          mkdir -p .temp
+          cd .temp
+          echo "${arr[0]}.${arr[1]}" > latest.txt
+          
+          echo "${{ fromJSON(steps.make-active-request.outputs.response).provided.major }}.${{ fromJSON(steps.make-active-request.outputs.response).provided.minor }}" > min-active.txt
+          
+          echo "${{ fromJSON(steps.make-security-request.outputs.response).provided.major }}.${{ fromJSON(steps.make-security-request.outputs.response).provided.minor }}" > min-security.txt
+
+      - name: Cache contents
+        uses: actions/cache@v3
+        with:
+          path: .temp
+          key: temp
