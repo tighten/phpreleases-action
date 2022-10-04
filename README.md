@@ -36,13 +36,6 @@ By default, this action uses the [PHP Releases API](https://phpreleases.com/) to
 ```
 A full sample is available in this repo's [.github/workflows directory](https://github.com/tighten/phpreleases-action/blob/main/.github/workflows/main.yml).
 
-Then, refer to the `output_releases` job's output in the `php` line of your matrix strategy, like below:
-```yaml
-  strategy:
-    matrix:
-      php: ${{ fromJSON(needs.output_releases.outputs.range) }}
-```
-
 ### Add PHP versions that are not included by default
 ```yaml
   # This job will need to run before the job that defines the matrix.
