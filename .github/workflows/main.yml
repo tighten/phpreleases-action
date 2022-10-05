@@ -8,7 +8,8 @@ jobs:
       range: ${{ steps.releases.outputs.range }}
     steps:
       - name: Fetch Current Releases
-        uses: tighten/phpreleases-action@main
+#        uses: tighten/phpreleases-action@main
+        uses: tighten/phpreleases-action@alk/feature-use-cache-values
         id: releases
         with:
           releases: '7.4, 7.3'
