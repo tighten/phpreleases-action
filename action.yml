@@ -75,10 +75,12 @@ runs:
       id: return-response
       run: |
         if [ "${{ steps.fetch-cache.outputs.cache-hit }}" != 'true' ]; then
+          echo "Data fetched from Api"
           latest="${{ steps.parse-latest.outputs.latest-release }}"
           minAct="${{ steps.parse-min.outputs.min-active-release }}"
           minSec="${{ steps.parse-min.outputs.min-security-release }}"
         else 
+          echo "Data fetched from cache"
           latest=$(cat .temp/latest.txt)
           minAct=$(cat .temp/min-active.txt)
           minSec=$(cat .temp/min-security.txt)
