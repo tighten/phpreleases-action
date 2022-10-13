@@ -7,10 +7,6 @@ inputs:
   releases:
     required: false
     description: 'Add specific versions to the matrix array'
-outputs:
-  range:
-    description: "Releases Array"
-    value: ${{ env.releases-array }}
 runs:
   using: "composite"
   steps:
