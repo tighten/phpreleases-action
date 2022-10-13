@@ -10,7 +10,7 @@ inputs:
 outputs:
   range:
     description: "Releases Array"
-    value: ${{ steps.return-response.outputs.releases-array }}
+    value: ${{ env.releases-array }}
 runs:
   using: "composite"
   steps:
@@ -27,7 +27,7 @@ runs:
       id: store-user-input
       shell: bash
       run: |
-        echo "::set-output name=user-input::$(echo ${{ inputs.releases }})"
+        echo "user-input=${{ inputs.releases }}" >> $GITHUB_ENV
 
     - name: Make Latest Request
       id: make-latest-request
@@ -61,24 +61,24 @@ runs:
         latest=${{ steps.make-latest-request.outputs.response }}
         IFS='.'
         read -ra arr <<< "$latest"
-        echo "::set-output name=latest-release::$(echo ${arr[0]}.${arr[1]})"
+        echo "latest-release=$(echo ${arr[0]}.${arr[1]})" >> $GITHUB_ENV
 
     - name: Parse Minimum Supported
       id: parse-min
       if: steps.fetch-cache.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        echo "::set-output name=min-active-release::$(echo ${{ fromJSON(steps.make-active-request.outputs.response).provided.major }}.${{ fromJSON(steps.make-active-request.outputs.response).provided.minor }})"
-        echo "::set-output name=min-security-release::$(echo ${{ fromJSON(steps.make-security-request.outputs.response).provided.major }}.${{ fromJSON(steps.make-security-request.outputs.response).provided.minor }})"
+        echo "min-active-release=${{ fromJSON(steps.make-active-request.outputs.response).provided.major }}.${{ fromJSON(steps.make-active-request.outputs.response).provided.minor }}" >> $GITHUB_ENV
+        echo "min-security-release=${{ fromJSON(steps.make-security-request.outputs.response).provided.major }}.${{ fromJSON(steps.make-security-request.outputs.response).provided.minor }}" >> $GITHUB_ENV
 
     - name: Return Response
       id: return-response
       run: |
         if [ "${{ steps.fetch-cache.outputs.cache-hit }}" != 'true' ]; then
           echo "Data fetched from Api"
-          latest="${{ steps.parse-latest.outputs.latest-release }}"
-          minAct="${{ steps.parse-min.outputs.min-active-release }}"
-          minSec="${{ steps.parse-min.outputs.min-security-release }}"
+          latest="${{ env.latest-release }}"
+          minAct="${{ env.min-active-release }}"
+          minSec="${{ env.min-security-release }}"
         else 
           echo "Data fetched from cache"
           latest=$(cat .temp/latest.txt)
@@ -86,10 +86,10 @@ runs:
           minSec=$(cat .temp/min-security.txt)
         fi
 
-        if [ -z "${{ steps.store-user-input.outputs.user-input }}" ]; then
-          echo "::set-output name=releases-array::$(echo [${latest}, ${minAct}, ${minSec}])"
+        if [ -z "${{ env.user-input }}" ]; then
+          echo "releases-array=$(echo [${latest}, ${minAct}, ${minSec}])" >> $GITHUB_ENV
         else
-          userInput="${{ steps.store-user-input.outputs.user-input }}"
+          userInput="${{ env.user-input }}"
           IFS=', ' read -r -a array <<< "$userInput"
           array+=(${latest} ${minAct} ${minSec})
           deduped=($(echo "${array[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
@@ -97,6 +97,6 @@ runs:
           printf -v formatted ',%s' "${deduped[@]}"
           formatted=${formatted:1}
 
-          echo "::set-output name=releases-array::$(echo [${formatted}])"
+          echo "releases-array=$(echo [${formatted}])" >> $GITHUB_ENV
         fi
       shell: bash
