@@ -1,3 +1,5 @@
+name: Example Implementation
+
 on: [push]
 
 jobs:

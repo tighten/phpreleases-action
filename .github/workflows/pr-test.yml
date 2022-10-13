@@ -1,5 +1,6 @@
+name: Test Pull Request
+
 on:
-  push:
   pull_request:
     types: [opened]
 
