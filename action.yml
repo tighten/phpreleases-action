@@ -69,6 +69,7 @@ runs:
 
     - name: Return Response
       id: return-response
+      shell: bash
       run: |
         if [ "${{ steps.fetch-cache.outputs.cache-hit }}" != 'true' ]; then
           echo "Data fetched from Api"
@@ -95,4 +96,3 @@ runs:
 
           echo "releases-array=$(echo [${formatted}])" >> $GITHUB_ENV
         fi
-      shell: bash
