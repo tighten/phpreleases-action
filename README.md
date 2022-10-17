@@ -1,5 +1,5 @@
 ![Release](https://img.shields.io/github/v/release/tighten/phpreleases-action?include_prereleases&style=flat-square)
-![Build Status](https://github.com/tighten/phpreleases-action/actions/workflows/main.yml/badge.svg)
+![Build Status](https://github.com/tighten/phpreleases-action/actions/workflows/pr-test.yml/badge.svg)
 
 # PHP Releases Action
 Tired of manually keeping your GitHub actions workflow up to date with the PHP support schedule?  Use this action to generate an array of supported PHP versions for a GitHub Actions matrix. 

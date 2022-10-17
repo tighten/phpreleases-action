@@ -1,6 +1,10 @@
-name: Example Implementation
+name: Test
 
-on: [push]
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened]
 
 jobs:
   output_releases:
@@ -9,8 +13,10 @@ jobs:
     outputs:
       range: ${{ steps.releases.outputs.range }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Fetch Current Releases
-        uses: tighten/phpreleases-action@main
+        uses: ./
         id: releases
         with:
           releases: '7.4, 7.3'
