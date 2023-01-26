@@ -1,3 +1,4 @@
+![PHP Releases Cover Image](https://user-images.githubusercontent.com/4378273/214841988-9730046e-0bbc-4406-871b-0bc0a8e88fe9.png)
 ![Release](https://img.shields.io/github/v/release/tighten/phpreleases-action?include_prereleases&style=flat-square)
 ![Build Status](https://github.com/tighten/phpreleases-action/actions/workflows/pr-test.yml/badge.svg)
 
