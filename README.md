@@ -16,10 +16,10 @@ By default, this action uses the [PHP Releases API](https://phpreleases.com/) to
     runs-on: ubuntu-latest
     # Expose the variable for your dependent job.
     outputs:
-      range: ${{ steps.releases.outputs.range }}
+      range: ${{ env.releases-array }}
     steps:
       - name: Fetch Current Releases
-        uses: tighten/phpreleases-action@v1
+        uses: tighten/phpreleases-action@v2
         id: releases
  ```
  
@@ -46,10 +46,10 @@ A full sample is available in this repo's [.github/workflows directory](https://
     runs-on: ubuntu-latest
     # Expose the variable for your dependent job.
     outputs:
-      range: ${{ steps.releases.outputs.range }}
+      range: ${{ env.releases-array }}
     steps:
       - name: Fetch Current Releases
-        uses: tighten/phpreleases-action@v1
+        uses: tighten/phpreleases-action@v2
         id: releases
         with:
           # Comma delimited string of all versions that should be included in the matrix.
@@ -70,10 +70,10 @@ jobs:
     name: Generate PHP Releases Array
     runs-on: ubuntu-latest
     outputs:
-      range: ${{ steps.releases.outputs.range }}
+      range: ${{ env.releases-array }}
     steps:
       - name: Fetch Current Releases
-        uses: tighten/phpreleases-action@v1
+        uses: tighten/phpreleases-action@v2
         id: releases
         with:
           releases: '7.4'

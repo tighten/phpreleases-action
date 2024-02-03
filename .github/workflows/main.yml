@@ -7,7 +7,7 @@ jobs:
     name: Generate PHP Releases Array
     runs-on: ubuntu-latest
     outputs:
-      range: ${{ steps.releases.outputs.range }}
+      range: ${{ env.releases-array }}
     steps:
       - name: Fetch Current Releases
         uses: tighten/phpreleases-action@main
@@ -20,7 +20,7 @@ jobs:
     needs: output_releases
     strategy:
       matrix:
-        php: ${{fromJSON(needs.output_releases.outputs.range)}}
+        php: ${{ fromJSON(needs.output_releases.outputs.range) }}
     name: PHP ${{ matrix.php }}
     steps:
       - name: Echo PHP
